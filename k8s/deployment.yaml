@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: java-app
-          image: elkhawaga/javaapp:latest
+          image: elkhawaga/java-app:latest
           ports:
             - containerPort: 80
               protocol: TCP
