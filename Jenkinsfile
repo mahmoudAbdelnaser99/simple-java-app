@@ -23,15 +23,23 @@ pipeline{
             }
         }
 
-        stage('deploy'){
-            steps{
-                script{
-                    withAWS(credentials: 'aws-cli', region: 'us-east-1') {
-                    sh 'aws eks update-kubeconfig --region us-east-1 --name eks'
-                    sh 'kubectl apply -f ./k8s/deployment.yaml'
+        stage('deploy') {
+            steps {
+                script {
+                    withCredentials([
+                        string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY'),
+                        string(credentialsId: 'aws-session-token', variable: 'AWS_SESSION_TOKEN')
+                    ]) {
+                        sh '''
+                            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                            export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN
+        
+                            aws eks update-kubeconfig --region us-east-1 --name eks
+                            kubectl apply -f ./k8s/deployment.yaml
+                        '''
                     }
                 }
             }
-        }
-    }
 }
